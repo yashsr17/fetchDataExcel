@@ -55,7 +55,6 @@ const data = []
 fetchData()
 function fetchData(search='') {
     var headers = {}
-    console.log("url", url)
     fetch(url)
         .then(res => res.text())
         .then(rep => {
@@ -73,9 +72,7 @@ function processRows(json, search='', category=false) {
     json.forEach((row) => {
         const keys = Object.keys(row);
         keys.forEach((key) => {
-            console.log(category, row[key][5])
             if(category && (row[key][5] && ((row[key][5].v).toLowerCase()).includes(category))) {
-                console.log("inside category....",category, row[key][5].v)
                 html += `<tr onclick="myFunction(`+totalcount+`)"><td>`+(totalcount+1)+`</td><td>`+row[key][2].v+`</td><td>`+(row[key][4] && row[key][4].v?row[key][4].v:'')+`</td><td>`+(row[key][5] && row[key][5].v?row[key][5].v:'')+`</td></tr>`
             }
             else if(search!='' && (((row[key][2].v).toLowerCase()).includes(search)) && !category){
@@ -128,9 +125,7 @@ function myFunction(value){
 function changeFunc() {
     var selectBox = document.getElementById("custom-select");
     var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-    console.log(selectedValue);
     if(selectedValue!="null"){
-        console.log("calling", selectedValue.toLowerCase())
         processRows(allData, '', selectedValue.toLowerCase())
     }
 }
