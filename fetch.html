@@ -1,0 +1,187 @@
+<html>
+    <head>
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<!-- BS JavaScript -->
+<script src =  "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        #kids-table {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #kids-table td#one, #kids-table th#one{
+            width: 9%;
+        }
+        #kids-table td#two, #kids-table th#four{
+            width: 50%;
+        }
+        #kids-table td#three, #kids-table th#three{
+            width: 31%;
+        }
+        #kids-table td#four, #kids-table th#four{
+            width: 10%;
+        }
+
+        #kids-table td, #kids-table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #kids-table tr:nth-child(even){background-color: #f2f2f2;}
+
+        #kids-table tr:hover {background-color: #ddd;}
+
+        #kids-table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+        }
+    </style>
+<script>
+const sheetId = '12z1NWFVXnQX9UO1qeQ9SxhTfyCwSNkto_yF_Fmg_5hc';
+const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
+const sheetName = 'Kids Day Registration  (Responses)';
+const url = `${base}`
+let allData = {};
+const data = []
+fetchData()
+function fetchData(search='') {
+    var headers = {}
+    fetch(url)
+        .then(res => res.text())
+        .then(rep => {
+            const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
+            allData = jsonData.table.rows;
+            processRows(jsonData.table.rows, search);
+        })
+}
+  
+function processRows(json, search='', category=false) {
+    let html='';
+    let totalcount=0;
+    let boycount=0;
+    let girlcount=0;
+    json.forEach((row) => {
+        const keys = Object.keys(row);
+        keys.forEach((key) => {
+            if(category && (row[key][5] && ((row[key][5].v).toLowerCase()).includes(category))) {
+                html += `<tr onclick="myFunction(`+totalcount+`)"><td>`+(totalcount+1)+`</td><td>`+row[key][2].v+`</td><td>`+(row[key][4] && row[key][4].v?row[key][4].v:'')+`</td><td>`+(row[key][5] && row[key][5].v?row[key][5].v:'')+`</td></tr>`
+            }
+            else if(search!='' && (((row[key][2].v).toLowerCase()).includes(search)) && !category){
+                html += `<tr onclick="myFunction(`+totalcount+`)"><td>`+(totalcount+1)+`</td><td>`+row[key][2].v+`</td><td>`+(row[key][4] && row[key][4].v?row[key][4].v:'')+`</td><td>`+(row[key][5] && row[key][5].v?row[key][5].v:'')+`</td></tr>`
+            } else if (search=='' && !category) {
+                html += `<tr onclick="myFunction(`+totalcount+`)"><td id="one">`+(totalcount+1)+`</td><td id="two">`+row[key][2].v+`</td><td id="three">`+(row[key][4] && row[key][4].v?row[key][4].v:'')+`</td><td id="four">`+(row[key][5] && row[key][5].v?row[key][5].v:'')+`</td></tr>`
+            }
+
+            if(row[key][5] && row[key][5].v!=null && (row[key][5].v=='Boy')){
+                boycount+=1
+            }
+            if(row[key][5] && row[key][5].v!=null && (row[key][5].v=='Girl')){
+                girlcount+=1
+            }
+            totalcount++;
+        })
+    })
+
+    $('.display-data').html(html)
+    if(search==''){
+        $('.display-other').html('Count: '+totalcount+' Boy: '+boycount+' Girl: '+girlcount)
+    }
+}
+
+function onclickhandler(search){
+    fetchData(search.toLowerCase())
+}
+
+function myFunction(value){
+    const dataByValue=allData[value];
+    const keys = Object.keys(dataByValue);
+    const dataByKey = dataByValue[keys[0]];
+
+    let html=`<div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Name</b></div><div class="col-md-9">: `+(dataByKey[2] && dataByKey[2].v?dataByKey[2].v:'')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Gender</b></div><div class="col-md-9">: `+(dataByKey[5] && dataByKey[5].v?dataByKey[5].v:'-')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Age</b></div><div class="col-md-9">: `+(dataByKey[4] && dataByKey[4].v?dataByKey[4].v:'')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>School</b></div><div class="col-md-9">: `+(dataByKey[6] && dataByKey[6].v?dataByKey[6].v:'-')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Parents</b></div><div class="col-md-9">: `+(dataByKey[7] && dataByKey[7].v?dataByKey[7].v:'-')+` / `+(dataByKey[8] && dataByKey[8].v?dataByKey[8].v:'-')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Contact</b></div><div class="col-md-9">: `+(dataByKey[9] && dataByKey[9].v?dataByKey[9].v:'-')+` / `+(dataByKey[10] && dataByKey[10].v?dataByKey[10].v:'-')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Email</b></div><div class="col-md-9">: `+(dataByKey[1] && dataByKey[1].v?dataByKey[1].v:'')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Area</b></div><div class="col-md-9">: `+(dataByKey[11] && dataByKey[11].v?dataByKey[11].v:'')+`</div></div>
+    <div class="row col-md-12"><div class="col-md-3"><b>Reference</b></div><div class="col-md-9">: `+(dataByKey[12] && dataByKey[12].v?dataByKey[12].v:'')+`</div></div>
+    </div>`
+
+    $('.modal-body').html(html);
+    $('#orderModal').modal('show');
+}
+
+function changeFunc() {
+    var selectBox = document.getElementById("custom-select");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    if(selectedValue!="null"){
+        processRows(allData, '', selectedValue.toLowerCase())
+    }
+}
+
+</script>
+</head>
+<body>
+    <br>
+    <br>
+    <div class="row col-md-12">
+        <div class="col-md-8">
+            <input class="w3-input" type="text" placeholder="Search By Name" oninput="onclickhandler($(this).val())">
+        </div>
+        <div class="display-category col-md-4">
+            <select id="custom-select" class="custom-select" onchange="changeFunc();">
+                <option value="null">- Select -</option>
+                <option value="Boy">Boy</option>
+                <option value="Girl">Girl</option>
+            </select>
+        </div>
+    </div>
+    <br>
+    <div class="display-other">Loading...</div>
+    <table id="kids-table">
+        <thead>
+            <th id="one">Sr No</th>
+            <th id="two">Name</th>
+            <th id="three">Age</th>
+            <th id="four">Gender</th>
+        </thead>
+        <tbody class="display-data">
+            <tr>
+                <td>Loading...</td>                
+                <td>Loading...</td>
+                <td>Loading...</td>
+                <td>Loading...</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="modal" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Personal Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
