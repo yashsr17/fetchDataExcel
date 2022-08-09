@@ -52,7 +52,9 @@ const sheetName = 'Kids Day Registration  (Responses)';
 const url = `${base}`
 let allData = {};
 const data = []
+$( document ).ready(function() {
 fetchData()
+});
 function fetchData(search='') {
     var headers = {}
     console.log("url", url)
